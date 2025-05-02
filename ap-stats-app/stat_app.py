@@ -4,8 +4,8 @@ from notes import NOTES
 class StatApp:
     def __init__(self):
         self.notes_data = NOTES
-        self.units = sorted(list(self.notes_data.keys()))
-        self.num_units = len(self.units)
+        self.topics = sorted(list(self.notes_data.keys()))
+        self.num_topics = len(self.topics)
         self.running = True
         self.current_menu = "main"
 
@@ -26,19 +26,19 @@ class StatApp:
             except ValueError:
                 print("Invalid. Enter 1 or 2.")
 
-    def display_units_menu(self):
+    def display_topics_menu(self):
         disp_clr()
         print("\nSelect Topic:")
-        for i, topic_name in enumerate(self.units, 1):
+        for i, topic_name in enumerate(self.topics, 1):
             print("{}. {}".format(i, topic_name))
         print("0. Back")
 
         while True:
-            user_input = input("> ").strip()
+            user_input = input("/ > ").strip()
             try:
                 choice = int(user_input)
-                if 1 <= choice <= self.num_units:
-                    selected_topic_name = self.units[choice - 1]
+                if 1 <= choice <= self.num_topics:
+                    selected_topic_name = self.topics[choice - 1]
                     self.display_notes(selected_topic_name)
                     return "stay"
                 elif choice == 0:
@@ -59,11 +59,11 @@ class StatApp:
 
             print("\n{} - Subtopics:".format(topic_name))
             subtopics = list(topic_concepts.keys())
-            for idx, subtopic in enumerate(subtopics, 1):
-                print("{}. {}".format(idx, subtopic))
+            for i, subtopic in enumerate(subtopics, 1):
+                print("{}. {}".format(i, subtopic))
             print("0. Back")
 
-            user_input = input("\nSubtopic > ").strip()
+            user_input = input("\n/Subtopic > ").strip()
             try:
                 choice = int(user_input)
                 if 1 <= choice <= len(subtopics):
@@ -111,13 +111,13 @@ class StatApp:
             if self.current_menu == "main":
                 choice = self.display_main_menu()
                 if choice == 1:
-                    self.current_menu = "units"
+                    self.current_menu = "topics"
                 elif choice == 2:
                     self.running = False
                     disp_clr()
                     print("Goodbye!")
-            elif self.current_menu == "units":
-                action = self.display_units_menu()
+            elif self.current_menu == "topics":
+                action = self.display_topics_menu()
                 if action == "back":
                     self.current_menu = "main"
 

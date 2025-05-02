@@ -1,0 +1,3 @@
+PROGRAM:HELLO
+:ClrHome
+:Disp "HELLO WORLD!"

@@ -29,8 +29,8 @@ class StatApp:
     def display_units_menu(self):
         disp_clr()
         print("\nSelect Topic:")
-        for idx, topic_name in enumerate(self.units, 1):
-            print("{}. {}".format(idx, topic_name))
+        for i, topic_name in enumerate(self.units, 1):
+            print("{}. {}".format(i, topic_name))
         print("0. Back")
 
         while True:
@@ -83,14 +83,10 @@ class StatApp:
         current_line = 0
         total_lines = len(lines)
 
-        page_num = 1
-        total_pages = (total_lines + lines_per_page - 1) // lines_per_page
-
         while current_line < total_lines:
             disp_clr()
             header = "{} > {}".format(topic_name[:10], subtopic_title[:10])
-            page_info = " (Pg {}/{})".format(page_num, total_pages)
-            print(header + page_info)
+            print(header)
             print("-" * 26)
 
             end_line = min(current_line + lines_per_page, total_lines)
@@ -103,7 +99,6 @@ class StatApp:
                     start += max_width
 
             current_line = end_line
-            page_num += 1
 
             if current_line < total_lines:
                 input("Press Enter...")

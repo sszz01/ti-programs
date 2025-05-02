@@ -1,6 +1,5 @@
-# from ti_system import * import ti-specific system functions
-# import ti_plotlib as plt
-from notes import NOTES
+from ti_system import *  # TI-specific system functions
+from notes import NOTES  # Custom AP Stats notes
 
 class StatApp:
     def __init__(self):
@@ -12,9 +11,9 @@ class StatApp:
         self.current_menu = "main"
 
     def display_main_menu(self):
-        print("\nUltimate AP Statistics Notes Guide")
-        print("Select an option:")
-        print("1. Study Guide (Select Unit)")
+        disp_clr()
+        print("\nAP Stats Notes")
+        print("1. Study Guide")
         print("2. Exit")
 
         while True:
@@ -24,15 +23,16 @@ class StatApp:
                 if 1 <= choice <= 2:
                     return choice
                 else:
-                    print("Invalid choice. Please enter 1 or 2.")
+                    print("Invalid. Enter 1 or 2.")
             except ValueError:
-                print("Invalid input. Enter number 1 or 2.")
+                print("Invalid. Enter 1 or 2.")
 
     def display_units_menu(self):
-        print("\nSelect a unit(1-9):")
-        for _, unit_name in enumerate(self.units, 1):
-            print("{unit_name}".format(unit_name=unit_name))
-        print("0. Go Back")
+        disp_clr()
+        print("\nSelect Unit:")
+        for idx, unit_name in enumerate(self.units, 1):
+            print("{}. {}".format(idx, unit_name))
+        print("0. Back")
 
         while True:
             user_input = input("> ").strip()
@@ -45,21 +45,56 @@ class StatApp:
                 elif choice == 0:
                     return "back"
                 else:
-                    print("Invalid choice. Please enter a number between 1 and {}.".format(self.num_units + 1))
+                    print("Invalid. Try a unit number.")
             except ValueError:
-                print("Invalid input. Please enter a number between 1 and {}.".format(self.num_units + 1))
+                print("Invalid input.")
 
     def display_notes(self, unit_name):
-        unit_data = self.notes_data.get(unit_name, "Notes not found for this unit.")
-        if isinstance(unit_data, dict):
-            print("\n{}".format(unit_name))
-            print("-" * 40)
-            for subtopic, content in unit_data.items():
-                print("\n{}:".format(subtopic))
-                if isinstance(content, tuple):
-                    print("".join(content))
+        while True:
+            disp_clr()
+            unit_data = self.notes_data.get(unit_name, {})
+            if not unit_data:
+                print("No notes found.")
+                input("\nPress Enter to return...")
+                return
+
+            print("\n{} - Subtopics:".format(unit_name))
+            subtopics = list(unit_data.get("Concepts", {}).keys())  # Ensure it accesses the "Concepts" dictionary
+            for idx, topic in enumerate(subtopics, 1):
+                print("{}. {}".format(idx, topic))
+            print("0. Back")
+
+            user_input = input("\nSubtopic > ").strip()
+            try:
+                choice = int(user_input)
+                if 1 <= choice <= len(subtopics):
+                    selected_topic = subtopics[choice - 1]
+                    self.display_subtopic(unit_data["Concepts"][selected_topic], selected_topic, unit_name)
+                elif choice == 0:
+                    return
                 else:
-                    print(content)
+                    print("Invalid. Try again.")
+            except ValueError:
+                print("Invalid input.")
+
+    def display_subtopic(self, content, subtopic_title, unit_name):
+        lines = content.split("\n")  # No need for complex tuple handling
+
+        lines_per_page = 7
+        current_line = 0
+        total_lines = len(lines)
+
+        while current_line < total_lines:
+            disp_clr()
+            print("{} > {}".format(unit_name, subtopic_title))
+            print("-" * 40)
+            for i in range(current_line, min(current_line + lines_per_page, total_lines)):
+                print("{}".format(lines[i]))
+            current_line += lines_per_page
+            if current_line < total_lines:
+                input("\nPress Enter...")
+
+        input("\nPress Enter to return...")
 
     def run(self):
         while self.running:
@@ -75,5 +110,6 @@ class StatApp:
                 if action == "back":
                     self.current_menu = "main"
 
+# Run the app
 app = StatApp()
 app.run()

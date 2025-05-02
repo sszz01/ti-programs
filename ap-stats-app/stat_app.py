@@ -1,11 +1,10 @@
-from ti_system import *  # TI-specific system functions
-from notes import NOTES  # Custom AP Stats notes
+from ti_system import * # TI-specific system functions
+from notes import NOTES
 
 class StatApp:
     def __init__(self):
         self.notes_data = NOTES
-        self.units = sorted(list(self.notes_data.keys()),
-                            key=lambda x: int(x.split()[1].split(':')[0]) if len(x.split()) > 1 else 0)
+        self.units = sorted(list(self.notes_data.keys()))
         self.num_units = len(self.units)
         self.running = True
         self.current_menu = "main"
@@ -29,9 +28,9 @@ class StatApp:
 
     def display_units_menu(self):
         disp_clr()
-        print("\nSelect Unit:")
-        for idx, unit_name in enumerate(self.units, 1):
-            print("{}. {}".format(idx, unit_name))
+        print("\nSelect Topic:")
+        for idx, topic_name in enumerate(self.units, 1):
+            print("{}. {}".format(idx, topic_name))
         print("0. Back")
 
         while True:
@@ -39,37 +38,37 @@ class StatApp:
             try:
                 choice = int(user_input)
                 if 1 <= choice <= self.num_units:
-                    selected_unit_name = self.units[choice - 1]
-                    self.display_notes(selected_unit_name)
+                    selected_topic_name = self.units[choice - 1]
+                    self.display_notes(selected_topic_name)
                     return "stay"
                 elif choice == 0:
                     return "back"
                 else:
-                    print("Invalid. Try a unit number.")
+                    print("Invalid. Try a topic number.")
             except ValueError:
                 print("Invalid input.")
 
-    def display_notes(self, unit_name):
+    def display_notes(self, topic_name): # Renamed parameter
         while True:
             disp_clr()
-            unit_data = self.notes_data.get(unit_name, {})
-            if not unit_data:
+            topic_concepts = self.notes_data.get(topic_name, {}).get("Concepts", {})
+            if not topic_concepts:
                 print("No notes found.")
                 input("\nPress Enter to return...")
                 return
 
-            print("\n{} - Subtopics:".format(unit_name))
-            subtopics = list(unit_data.get("Concepts", {}).keys())  # Ensure it accesses the "Concepts" dictionary
-            for idx, topic in enumerate(subtopics, 1):
-                print("{}. {}".format(idx, topic))
+            print("\n{} - Subtopics:".format(topic_name))
+            subtopics = list(topic_concepts.keys())
+            for idx, subtopic in enumerate(subtopics, 1):
+                print("{}. {}".format(idx, subtopic))
             print("0. Back")
 
             user_input = input("\nSubtopic > ").strip()
             try:
                 choice = int(user_input)
                 if 1 <= choice <= len(subtopics):
-                    selected_topic = subtopics[choice - 1]
-                    self.display_subtopic(unit_data["Concepts"][selected_topic], selected_topic, unit_name)
+                    selected_subtopic = subtopics[choice - 1]
+                    self.display_subtopic(topic_concepts[selected_subtopic], selected_subtopic, topic_name)
                 elif choice == 0:
                     return
                 else:
@@ -77,24 +76,40 @@ class StatApp:
             except ValueError:
                 print("Invalid input.")
 
-    def display_subtopic(self, content, subtopic_title, unit_name):
-        lines = content.split("\n")  # No need for complex tuple handling
+    def display_subtopic(self, content, subtopic_title, topic_name):
+        lines = content.split('\n')
 
-        lines_per_page = 7
+        lines_per_page = 8
         current_line = 0
         total_lines = len(lines)
 
+        page_num = 1
+        total_pages = (total_lines + lines_per_page - 1) // lines_per_page
+
         while current_line < total_lines:
             disp_clr()
-            print("{} > {}".format(unit_name, subtopic_title))
-            print("-" * 40)
-            for i in range(current_line, min(current_line + lines_per_page, total_lines)):
-                print("{}".format(lines[i]))
-            current_line += lines_per_page
-            if current_line < total_lines:
-                input("\nPress Enter...")
+            header = "{} > {}".format(topic_name[:10], subtopic_title[:10])
+            page_info = " (Pg {}/{})".format(page_num, total_pages)
+            print(header + page_info)
+            print("-" * 26)
 
-        input("\nPress Enter to return...")
+            end_line = min(current_line + lines_per_page, total_lines)
+            for i in range(current_line, end_line):
+                line = lines[i]
+                max_width = 26
+                start = 0
+                while start < len(line):
+                    print(line[start:start+max_width])
+                    start += max_width
+
+            current_line = end_line
+            page_num += 1
+
+            if current_line < total_lines:
+                input("Press Enter...")
+            else:
+                input("\nEnd. Press Enter...")
+
 
     def run(self):
         while self.running:
@@ -104,12 +119,12 @@ class StatApp:
                     self.current_menu = "units"
                 elif choice == 2:
                     self.running = False
+                    disp_clr()
                     print("Goodbye!")
             elif self.current_menu == "units":
                 action = self.display_units_menu()
                 if action == "back":
                     self.current_menu = "main"
 
-# Run the app
 app = StatApp()
 app.run()

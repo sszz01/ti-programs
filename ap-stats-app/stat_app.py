@@ -1,11 +1,12 @@
-# from ti_system import * # import ti-specific system functions
+# from ti_system import * import ti-specific system functions
 # import ti_plotlib as plt
 from notes import NOTES
 
 class StatApp:
     def __init__(self):
         self.notes_data = NOTES
-        self.units = list(self.notes_data.keys())
+        self.units = sorted(list(self.notes_data.keys()),
+                            key=lambda x: int(x.split()[1].split(':')[0]) if len(x.split()) > 1 else 0)
         self.num_units = len(self.units)
         self.running = True
         self.current_menu = "main"
@@ -31,6 +32,7 @@ class StatApp:
         print("\nSelect a unit(1-9):")
         for _, unit_name in enumerate(self.units, 1):
             print("{unit_name}".format(unit_name=unit_name))
+        print("0. Go Back")
 
         while True:
             user_input = input("> ").strip()
@@ -43,13 +45,21 @@ class StatApp:
                 elif choice == 0:
                     return "back"
                 else:
-                    print(f"Invalid choice. Please enter a number between 1 and {self.num_units + 1}.")
+                    print("Invalid choice. Please enter a number between 1 and {}.".format(self.num_units + 1))
             except ValueError:
-                print(f"Invalid input. Please enter a number between 1 and {self.num_units + 1}.")
+                print("Invalid input. Please enter a number between 1 and {}.".format(self.num_units + 1))
 
     def display_notes(self, unit_name):
-        print(self.notes_data.get(unit_name, "Notes not found for this unit."))
-        input("> ").strip()
+        unit_data = self.notes_data.get(unit_name, "Notes not found for this unit.")
+        if isinstance(unit_data, dict):
+            print("\n{}".format(unit_name))
+            print("-" * 40)
+            for subtopic, content in unit_data.items():
+                print("\n{}:".format(subtopic))
+                if isinstance(content, tuple):
+                    print("".join(content))
+                else:
+                    print(content)
 
     def run(self):
         while self.running:
@@ -65,6 +75,5 @@ class StatApp:
                 if action == "back":
                     self.current_menu = "main"
 
-if __name__ == "__main__":
-    app = StatApp()
-    app.run()
+app = StatApp()
+app.run()

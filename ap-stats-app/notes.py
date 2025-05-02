@@ -1,7 +1,9 @@
 NOTES = {
     "Unit 1: Exploring One-Variable Data": {
         "Types of Data": (
-            "- **Quantitative data**: numerical values (e.g., height, test scores)\n"
+            "Quantitative data: numerical values (e.g., height, test scores)\n"
+            "Discrete – listable sets (counts)"
+            "Continuous – any value over an interval of values (measurements)"
             "- **Categorical data**: descriptive groups (e.g., gender, color)\n"
             "- Display Quantitative: dotplot, histogram, boxplot\n"
             "- Display Categorical: bar graph, pie chart"
@@ -10,7 +12,7 @@ NOTES = {
             "- **Shape**: symmetric, skewed left/right\n"
             "- **Outliers**: unusually high/low values\n"
             "- **Center**: mean (use if symmetric), median (use if skewed)\n"
-            "- **Spread**: range, IQR, standard deviation"
+            "- **Spread**: range, IQR(use if skewed), standard deviation(use if symmetric)"
         ),
         "Comparing Distributions": (
             "- Use SOCS\n"

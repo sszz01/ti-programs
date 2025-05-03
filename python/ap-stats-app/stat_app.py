@@ -7,31 +7,16 @@ class StatApp:
         self.topics = sorted(list(self.notes_data.keys()))
         self.num_topics = len(self.topics)
         self.running = True
-        self.current_menu = "main"
-
-    def display_main_menu(self):
-        disp_clr()
-        print("\nAP Stats Notes")
-        print("1. Study Guide")
-        print("2. Exit")
-
-        while True:
-            user_input = input("> ").strip()
-            try:
-                choice = int(user_input)
-                if 1 <= choice <= 2:
-                    return choice
-                else:
-                    print("Invalid. Enter 1 or 2.")
-            except ValueError:
-                print("Invalid. Enter 1 or 2.")
+        self.current_menu = "topics"
 
     def display_topics_menu(self):
         disp_clr()
         print("\nSelect Topic:")
         for i, topic_name in enumerate(self.topics, 1):
             print("{}. {}".format(i, topic_name))
-        print("0. Back")
+            if i == 8:
+                input("\nPress enter to continue...")
+        print("0. Quit")
 
         while True:
             user_input = input("/ > ").strip()
@@ -39,10 +24,12 @@ class StatApp:
                 choice = int(user_input)
                 if 1 <= choice <= self.num_topics:
                     selected_topic_name = self.topics[choice - 1]
+                    self.current_menu = "subtopics"
                     self.display_notes(selected_topic_name)
+                    self.current_menu = "topics"
                     return "stay"
-                elif choice == 0:
-                    return "back"
+                elif choice == 0 and self.current_menu == "topics":
+                    return "quit"
                 else:
                     print("Invalid. Try a topic number.")
             except ValueError:
@@ -77,6 +64,7 @@ class StatApp:
                 print("Invalid input.")
 
     def display_subtopic(self, content, subtopic_title, topic_name):
+        self.current_menu = "subtopics"
         lines = content.split('\n')
 
         lines_per_page = 8
@@ -108,18 +96,11 @@ class StatApp:
 
     def run(self):
         while self.running:
-            if self.current_menu == "main":
-                choice = self.display_main_menu()
-                if choice == 1:
-                    self.current_menu = "topics"
-                elif choice == 2:
+            if self.current_menu == "topics":
+                action = self.display_topics_menu()
+                if action == "quit":
                     self.running = False
                     disp_clr()
-                    print("Goodbye!")
-            elif self.current_menu == "topics":
-                action = self.display_topics_menu()
-                if action == "back":
-                    self.current_menu = "main"
 
 app = StatApp()
 app.run()
